@@ -1,0 +1,80 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: orochaa
+# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
+app: url-shortener
+service: url-shortener
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:Query
+      Resource:
+        - arn:aws:dynamodb:us-east-1:076015287289:table/ShortUrls
+        - arn:aws:dynamodb:us-east-1:076015287289:table/ShortUrls/index/userId-index
+
+functions:
+  list-url:
+    handler: src/functions/list-url.handler
+    events:
+      - http:
+          path: /
+          method: get
+
+  create-url:
+    handler: src/functions/create-url.handler
+    events:
+      - http:
+          path: /
+          method: post
+
+  redirect:
+    handler: src/functions/redirect.handler
+    events:
+      - http:
+          path: /{code}
+          method: get
+          request:
+            parameters:
+              paths:
+                code: true
+
+  delete-url:
+    handler: src/functions/delete-url.handler
+    events:
+      - http:
+          path: /{code}
+          method: delete
+          request:
+            parameters:
+              paths:
+                code: true
+
+resources:
+  Resources:
+    ShortUrlsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ShortUrls
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: code
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: code
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: userId-index
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL

@@ -1,0 +1,20 @@
+@baseUrl = https://your-api-id.execute-api.region.amazonaws.com/dev
+@userId = 38b6c022-3034-11f0-a91d-00155d11eec6
+
+
+GET {{baseUrl}}/?userId={{userId}} HTTP/1.1
+
+###
+POST {{baseUrl}}/?userId={{userId}} HTTP/1.1
+content-type: application/json
+
+{
+  "url": "https://github.com/orochaa",
+  "expireAt": 1847163709390
+}
+
+###
+GET {{baseUrl}}/xfXepT8
+
+###
+DELETE {{baseUrl}}/xfXepT8?userId={{userId}}
