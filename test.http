@@ -1,4 +1,4 @@
-@baseUrl = https://your-api-id.execute-api.region.amazonaws.com/dev
+@baseUrl = https://40ddd85pg2.execute-api.us-east-1.amazonaws.com/dev/
 @userId = 38b6c022-3034-11f0-a91d-00155d11eec6
 
 
@@ -14,7 +14,7 @@ content-type: application/json
 }
 
 ###
-GET {{baseUrl}}/xfXepT8
+GET {{baseUrl}}/34XkTYQ-9
 
 ###
 DELETE {{baseUrl}}/xfXepT8?userId={{userId}}

@@ -1,4 +1,4 @@
-import { PutCommand } from '@aws-sdk/lib-dynamodb'
+import { GetCommand, PutCommand } from '@aws-sdk/lib-dynamodb'
 import type { APIGatewayProxyHandler } from 'aws-lambda'
 import { nanoid } from 'nanoid'
 import { dynamo } from '../dynamodb-client.js'
@@ -45,7 +45,7 @@ export const handler: APIGatewayProxyHandler = async event => {
     const shortUrl: ShortUrl = {
       userId,
       originalUrl,
-      code: nanoid(7),
+      code: await generateCode(),
       createdAt: Date.now(),
       expireAt: expireAtDate.getTime(),
       deletedAt: null,
@@ -64,4 +64,29 @@ export const handler: APIGatewayProxyHandler = async event => {
 
     return response(500, { message: 'failed to create URL' })
   }
+}
+
+async function generateCode(attempts = 5): Promise<string> {
+  for (let i = 0; i < attempts; i++) {
+    const code = nanoid(9)
+
+    const result = await dynamo.send(
+      new GetCommand({
+        TableName: TABLE_NAME,
+        Key: {
+          code,
+        },
+      })
+    )
+
+    const isCodeDuplicated = !!result.Item
+
+    if (isCodeDuplicated) {
+      continue
+    }
+
+    return code
+  }
+
+  throw new Error(`Failed to generate unique code after ${attempts} attempts`)
 }

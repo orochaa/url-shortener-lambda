@@ -73,8 +73,22 @@ All endpoints are deployed via AWS API Gateway.
 
 ## 🗃 How to Deploy to AWS
 
+1. Install serverless framework globally
+
 ```bash
-npx serverless deploy
+npm install --global serverless
+```
+
+2. Run serverless deploy
+
+```bash
+serverless deploy
+```
+
+3. After use it, make sure to clean your AWS environment
+
+```bash
+serverless remove
 ```
 
 ## 🧪 How to Test
